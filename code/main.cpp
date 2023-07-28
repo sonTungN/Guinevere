@@ -1,7 +1,8 @@
 #include "knight.h"
 
 int main(int argc, char ** argv) {
-    std::string file_input ( argv[1] );
+    
+    std::string file_input { argv[1] };
 
     int HP, 
         level, 

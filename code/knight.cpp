@@ -16,6 +16,10 @@ void display(
         << ", rescue=: " << rescue << '\n';
 }
 
+void readFile(std::string file){
+    
+}
+
 void adventureToKoopa(
     std::string file_input, 
     int& HP, 
@@ -25,4 +29,5 @@ void adventureToKoopa(
     int& phoenixdown, 
     int& rescue) {
     
+
 }
