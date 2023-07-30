@@ -1,1 +1,0 @@
-g++ main main.cpp knight.cpp ./a.exe

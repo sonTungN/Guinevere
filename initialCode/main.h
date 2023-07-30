@@ -6,6 +6,7 @@
 #include <sstream>
 #include <string>
 #include <math.h>
+#include <vector>
 
 using std::cout, std::cin;
 
