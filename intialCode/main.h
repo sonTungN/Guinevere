@@ -7,6 +7,6 @@
 #include <string>
 #include <math.h>
 
-using std::cout, std::cin;
+using namespace std;
 
 #endif
