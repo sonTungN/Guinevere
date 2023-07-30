@@ -1,5 +1,5 @@
-#ifndef __MAIN_H__
-#define __MAIN_H__
+#ifndef MAIN_H
+#define MAIN_H
 
 #include <iostream>
 #include <fstream>
@@ -7,6 +7,6 @@
 #include <string>
 #include <math.h>
 
-using namespace std;
+using std::cout, std::cin;
 
 #endif
