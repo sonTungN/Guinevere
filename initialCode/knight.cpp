@@ -1,6 +1,7 @@
 #include "knight.h"
 
 static int maxHP {};
+static int eventCount {0};
 
 std::vector<int> readEventOrder(std::string file_input){
     std::vector<int> events;
@@ -47,7 +48,7 @@ bool checkLevel(const int& level){
 }
 
 void fightCreep( 
-        const int& eventCount,
+        const int& eventCode,
         int& HP, 
         int& level, 
         int& remedy, 
@@ -58,10 +59,10 @@ void fightCreep(
     std::string creepName[] {"MadBear", "Bandit", "LordLupin", "Elf", "Troll"};
     double creepDamage[] {1, 1.5, 4.5, 7.5, 9.5};
 
-    int b = eventCount % 10;
-    int levelO = eventCount > 6 ? (b > 5 ? b : 5) : b;
+    int b = (eventCount + 1) % 10;
+    int levelO = (eventCount + 1)> 6 ? (b > 5 ? b : 5) : b;
 
-    cout << "Meet " << creepName[eventCount - 1]
+    cout << "Meet " << creepName[eventCode - 1]
          << ", level: " << levelO << '\n';
     
     if(level > levelO){
@@ -71,7 +72,7 @@ void fightCreep(
         }
         
     } else if (level < levelO){
-        int damage = creepDamage[eventCount - 1] * levelO * 10;
+        int damage = creepDamage[eventCode - 1] * levelO * 10;
         HP -= damage;
         cout << "> Match-Up loses. Inflicting " << damage << " damage!" << '\n';
 
@@ -97,12 +98,13 @@ void adventureToKoopa(
     // event order
     static const std::vector <int> eventOrder { readEventOrder(file_input) };
     int numberOfEvents = eventOrder.size();
-    int eventCount = 1;
+    // int eventCount = 1;
     cout << "Starting the journey..." << '\n';
 
-    while(true){
+#if 1
+    while (true){
         // check condition of 'rescue'
-        if(rescue == 1){
+        if(rescue == 1 || eventCount == numberOfEvents){
             cout << "Rescue successfully!" << '\n';
             cout << "Game end..." << '\n';
             exit(0);
@@ -110,6 +112,7 @@ void adventureToKoopa(
         } else if (rescue == 0){
             // heal by 'phoenixdown'
             if(phoenixdown > 0){
+                cout << "*** Using phoenixdown to heal maxHP ***" << '\n';
                 HP = maxHP;
                 phoenixdown--;
                 rescue = -1;
@@ -121,14 +124,15 @@ void adventureToKoopa(
             }
         }
         display(HP, level, remedy, maidenkiss, phoenixdown, rescue);
+        int eventCode { eventOrder.at(eventCount) };
 
-        switch(eventOrder.at(eventCount - 1)){
+        switch(eventCode){
             case 0:
                 rescue = 1;
                 break;
             
             case 1 ... 5:
-                fightCreep(eventCount, HP, level, remedy, maidenkiss, phoenixdown, rescue);
+                fightCreep(eventCode, HP, level, remedy, maidenkiss, phoenixdown, rescue);
                 if(HP <= 0){
                     rescue = 0;
                 }
@@ -137,4 +141,5 @@ void adventureToKoopa(
 
         eventCount++; // Move to next event
     } // while-loop end
+#endif
 }
