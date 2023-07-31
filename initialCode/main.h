@@ -7,6 +7,7 @@
 #include <string>
 #include <math.h>
 #include <vector>
+#include <string_view>
 
 using std::cout, std::cin;
 

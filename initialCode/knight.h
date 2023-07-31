@@ -3,7 +3,6 @@
 
 #include "main.h"
 
-
 void display(
         int HP, 
         int level, 
