@@ -177,7 +177,7 @@ void fightSiren(
         cout << "Skip the match with Siren Vajsh." << '\n';
         return;
     }
-    
+
     if(level > levelO){
         cout << "> Match-Up wins. Level up!" << '\n';
         if(level <= 8){
@@ -195,6 +195,49 @@ void fightSiren(
     } else {
         cout << "> Match-Up draws. Continue the journey!" << '\n';
     }
+}
+
+bool isPrime(int num){
+    if(num <= 1){
+        return false;
+    }
+    for(int i = 2; i < num; i++){
+        if(num % i == 0){
+            return false;
+        }
+    }
+    return true;
+}
+
+void pickUpMushMario(
+        int& HP, 
+        int& level, 
+        int& remedy, 
+        int& maidenkiss, 
+        int& phoenixdown, 
+        int& rescue){
+    
+    int n1 = ((level + phoenixdown) % 5 + 1) * 3;
+    int s1 = 0;
+    for(int i {0}; i < n1; i++){
+        s1 += (99 - 2 * i);
+    }
+
+    HP += (s1 % 100);
+    int nearestPrime {0};
+    while(true){
+        if(isPrime(nearestPrime)){
+            if(nearestPrime > HP){
+                HP = nearestPrime;
+                if(HP > maxHP){
+                    HP = maxHP;
+                }
+                break;
+            }
+        }
+        nearestPrime++;
+    }
+    cout << "Picking up MushMario. HP increases to " << HP << '\n';
 }
 
 void adventureToKoopa(
@@ -292,6 +335,10 @@ void adventureToKoopa(
                 cureFrog(isFrog, level, maidenkiss);
 
                 break;
+
+            case 11:
+                pickUpMushMario(HP, level, remedy, maidenkiss, phoenixdown, rescue);
+                break;
         }
 
         if(HP <= 0){
@@ -302,4 +349,3 @@ void adventureToKoopa(
     } // while-loop end
 #endif
 }
-
