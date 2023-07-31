@@ -8,8 +8,13 @@ const double creepDamage[] {1, 1.5, 4.5, 7.5, 9.5};
 int b;
 int levelO;
 
-static int eventCountDown = 0;
+static int tinyCountDown = 0;
 static bool isTiny { false };
+
+static int frogCountDown = 0;
+static bool isFrog { false };
+int previousLevel {};
+
 //implement function declaration
 
 
@@ -98,7 +103,7 @@ void cureTiny(bool& isTiny, int& HP, int& remedy){
             }
             remedy--;
         } else {
-            eventCountDown += 3;
+            tinyCountDown = 3;
         }
     }
 }
@@ -115,11 +120,17 @@ void fightShaman(
     levelO = (eventCount + 1)> 6 ? (b > 5 ? b : 5) : b;
 
     cout << "Meet Shaman" << ", level: " << levelO << '\n';
-    
+    if(isTiny || isFrog){
+        cout << "Skip the match with Shaman." << '\n';
+        return; 
+    }
+
     if(level > levelO){
         cout << "> Match-Up wins. Level up!" << '\n';
-        if(checkLevel(level)){
+        if(level <= 8){
             level += 2;
+        } else {
+            level = 10;
         }
         
     } else if (level < levelO){
@@ -130,6 +141,56 @@ void fightShaman(
             HP = (int)(HP / 5);
         }
         isTiny = true;
+
+    } else {
+        cout << "> Match-Up draws. Continue the journey!" << '\n';
+    }
+}
+
+void cureFrog(bool& isFrog, int& level, int& maidenkiss){
+    if(isFrog){
+        if(maidenkiss > 0){
+            cout << "*** Using maidenkiss to cure FROG ***" << '\n';
+            level = previousLevel;
+            isFrog = false;
+            maidenkiss--;
+
+        } else {
+            frogCountDown = 3;
+        }
+    }
+}
+
+void fightSiren(
+        int& HP, 
+        int& level, 
+        int& remedy, 
+        int& maidenkiss, 
+        int& phoenixdown, 
+        int& rescue){
+    
+    b = (eventCount + 1) % 10;
+    levelO = (eventCount + 1)> 6 ? (b > 5 ? b : 5) : b;
+
+    cout << "Meet Siren Vajsh" << ", level: " << levelO << '\n';
+    if(isTiny || isFrog){
+        cout << "Skip the match with Siren Vajsh." << '\n';
+        return;
+    }
+    
+    if(level > levelO){
+        cout << "> Match-Up wins. Level up!" << '\n';
+        if(level <= 8){
+            level += 2;
+        } else {
+            level = 10;
+        }
+        
+    } else if (level < levelO){
+        cout << "Match-Up loses. Becoming a FROG..." << '\n'; 
+        previousLevel = level;
+        level = 1;
+        isFrog = true;
 
     } else {
         cout << "> Match-Up draws. Continue the journey!" << '\n';
@@ -158,10 +219,10 @@ void adventureToKoopa(
 
 #if 1
     while (true){
-        // check TINY condition
-        if(eventCountDown >= 0 && isTiny){
-            cout << "Round Left: " << eventCountDown << '\n';
-            if(eventCountDown == 0){
+        // check TINY countdown
+        if(tinyCountDown >= 0 && isTiny){
+            cout << "Tiny expired in: " << tinyCountDown << '\n';
+            if(tinyCountDown == 0){
                 cout << "*** TINY expired ***" << '\n';
                 isTiny = false;
                 HP *= 5;
@@ -169,7 +230,17 @@ void adventureToKoopa(
                     HP = maxHP;
                 }
             }
-            eventCountDown--;
+            tinyCountDown--;
+        }
+        // check FROG countdown
+        if(frogCountDown >= 0 && isFrog){
+            cout << "Frog expired in: " << frogCountDown << '\n';
+            if(frogCountDown == 0){
+                cout << "*** FROG expired ***" << '\n';
+                isFrog = false;
+                level = previousLevel;
+            }
+            frogCountDown--;
         }
 
         // check 'rescue' & eventCount
@@ -182,7 +253,7 @@ void adventureToKoopa(
                 rescue = -1;
 
                 isTiny = false;
-                eventCountDown = 0;
+                tinyCountDown = 0;
 
             } else {
                 cout << "The character is dead. (HP: " << HP << " )" << '\n';
@@ -215,6 +286,12 @@ void adventureToKoopa(
                 cureTiny(isTiny, HP, remedy);
 
                 break;
+            
+            case 7:
+                fightSiren(HP, level, remedy, maidenkiss, phoenixdown, rescue);
+                cureFrog(isFrog, level, maidenkiss);
+
+                break;
         }
 
         if(HP <= 0){
@@ -222,9 +299,6 @@ void adventureToKoopa(
         }
 
         eventCount++; // Move to next event
-
-        // Stats after match-up
-        // display(HP, level, remedy, maidenkiss, phoenixdown, rescue);
     } // while-loop end
 #endif
 }
