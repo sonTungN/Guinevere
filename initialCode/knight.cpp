@@ -31,14 +31,15 @@ void display(
         int maidenkiss,
         int phoenixdown, 
         int rescue) {
-            
-    cout << "Knight's Stats: " << '\n';
-    cout << "HP: " << HP
+
+    cout << "---------------------------------------------------------------------------" << '\n';     
+    cout << "| HP: " << HP
         << ", level: " << level
         << ", remedy: " << remedy
         << ", maidenkiss: " << maidenkiss
         << ", phoenixdown: " << phoenixdown
-        << ", rescue: " << rescue << '\n';
+        << ", rescue: " << rescue << " |" << '\n';
+    cout << "---------------------------------------------------------------------------" << '\n';
 }
 
 bool checkLevel(const int& level){
@@ -63,11 +64,13 @@ void fightCreep(
         int& phoenixdown, 
         int& rescue){
 
+    std::string creepName[5] {"MadBear", "Bandit", "LordLupin", "Elf", "Troll"};
     double creepDamage[5] {1, 1.5, 4.5, 7.5, 9.5};
+    cout << "Meet" << creepName[eventCount - 1] << '\n';
 
     int b = eventCount % 10;
     int levelO = eventCount > 6 ? (b > 5 ? b : 5) : b;
-            
+    
     if(level > levelO){
         cout << "Match wins. Level up!" << '\n';
         if(checkLevel(level)){
@@ -93,26 +96,31 @@ void adventureToKoopa(
         int& maidenkiss, 
         int& phoenixdown, 
         int& rescue) {
-    
-    maxHP = HP;
+
+    // set event mode to 'continue'
+    rescue = -1;
     // static const int maxHP = HP;
+    maxHP = HP;
+
+    // event order
     static const std::vector <int> eventOrder { readEventOrder(file_input) };
-
     int numberOfEvents = eventOrder.size();
-    int eventCount = 0;
 
+    int eventCount = 0;
+    cout << "Starting the journey..." << '\n';
+    display(HP, level, remedy, maidenkiss, phoenixdown, rescue);
+
+#if 0
     while(eventCount < numberOfEvents){
-        cout << "Starting the journey..." << '\n';
         display(HP, level, remedy, maidenkiss, phoenixdown, rescue);
-        cout << rescue << '\n';
 
         // check condition of 'rescue'
-        if(rescue = 1){
+        if(rescue == 1){
             cout << "Rescue successfully!" << '\n';
             cout << "Game end..." << '\n';
             exit(0);
-
-        } else if (rescue = 0){
+            
+        } else if (rescue == 0){
             // heal by 'phoenixdown'
             if(phoenixdown > 0){
                 HP = maxHP;
@@ -124,7 +132,6 @@ void adventureToKoopa(
                 cout << "Can't rescue Guinevere. Game end..." << '\n';
                 exit(0);
             }
-
         }
 
         switch(eventOrder.at(eventCount)){
@@ -143,4 +150,5 @@ void adventureToKoopa(
 
         eventCount++; // Move to next event
     } // while-loop end
+#endif
 }

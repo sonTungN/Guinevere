@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
     int remedy;
     int maidenkiss;
     int phoenixdown;
-    int rescue = -1;
+    int rescue;
 
     std::ifstream file;
     file.open(file_input);
