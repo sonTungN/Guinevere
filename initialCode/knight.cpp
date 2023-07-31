@@ -2,6 +2,16 @@
 
 static int maxHP {};
 static int eventCount {0};
+const std::string creepName[] {"MadBear", "Bandit", "LordLupin", "Elf", "Troll"};
+const double creepDamage[] {1, 1.5, 4.5, 7.5, 9.5};
+
+int b;
+int levelO;
+
+static int eventCountDown = 0;
+static bool isTiny { false };
+//implement function declaration
+
 
 std::vector<int> readEventOrder(std::string file_input){
     std::vector<int> events;
@@ -55,12 +65,9 @@ void fightCreep(
         int& maidenkiss, 
         int& phoenixdown, 
         int& rescue){
-
-    std::string creepName[] {"MadBear", "Bandit", "LordLupin", "Elf", "Troll"};
-    double creepDamage[] {1, 1.5, 4.5, 7.5, 9.5};
-
-    int b = (eventCount + 1) % 10;
-    int levelO = (eventCount + 1)> 6 ? (b > 5 ? b : 5) : b;
+    
+    b = (eventCount + 1) % 10;
+    levelO = (eventCount + 1)> 6 ? (b > 5 ? b : 5) : b;
 
     cout << "Meet " << creepName[eventCode - 1]
          << ", level: " << levelO << '\n';
@@ -78,7 +85,54 @@ void fightCreep(
 
     } else {
         cout << "> Match-Up draws. Continue the journey!" << '\n';
-        return;
+    }
+}
+
+void cureTiny(bool& isTiny, int& HP, int& remedy){
+    if(isTiny){
+        if(remedy > 0){
+            cout << "*** Using remedy to cure TINY ***" << '\n';
+            HP *= 5;
+            if(HP > maxHP){
+                HP = maxHP;
+            }
+            remedy--;
+        } else {
+            eventCountDown += 3;
+        }
+    }
+}
+
+void fightShaman(
+        int& HP, 
+        int& level, 
+        int& remedy, 
+        int& maidenkiss, 
+        int& phoenixdown, 
+        int& rescue){
+    
+    b = (eventCount + 1) % 10;
+    levelO = (eventCount + 1)> 6 ? (b > 5 ? b : 5) : b;
+
+    cout << "Meet Shaman" << ", level: " << levelO << '\n';
+    
+    if(level > levelO){
+        cout << "> Match-Up wins. Level up!" << '\n';
+        if(checkLevel(level)){
+            level += 2;
+        }
+        
+    } else if (level < levelO){
+        cout << "Match-Up loses. Becoming TINY..." << '\n'; 
+        if(HP < 5){
+            HP = 1;
+        } else {
+            HP = (int)(HP / 5);
+        }
+        isTiny = true;
+
+    } else {
+        cout << "> Match-Up draws. Continue the journey!" << '\n';
     }
 }
 
@@ -98,18 +152,28 @@ void adventureToKoopa(
     // event order
     static const std::vector <int> eventOrder { readEventOrder(file_input) };
     int numberOfEvents = eventOrder.size();
-    // int eventCount = 1;
+    
     cout << "Starting the journey..." << '\n';
+
 
 #if 1
     while (true){
-        // check condition of 'rescue'
-        if(rescue == 1 || eventCount == numberOfEvents){
-            cout << "Rescue successfully!" << '\n';
-            cout << "Game end..." << '\n';
-            exit(0);
-            
-        } else if (rescue == 0){
+        // check TINY condition
+        if(eventCountDown >= 0 && isTiny){
+            cout << "Round Left: " << eventCountDown << '\n';
+            if(eventCountDown == 0){
+                cout << "*** TINY expired ***" << '\n';
+                isTiny = false;
+                HP *= 5;
+                if(HP > maxHP){
+                    HP = maxHP;
+                }
+            }
+            eventCountDown--;
+        }
+
+        // check 'rescue' & eventCount
+        if (rescue == 0){
             // heal by 'phoenixdown'
             if(phoenixdown > 0){
                 cout << "*** Using phoenixdown to heal maxHP ***" << '\n';
@@ -117,15 +181,25 @@ void adventureToKoopa(
                 phoenixdown--;
                 rescue = -1;
 
+                isTiny = false;
+                eventCountDown = 0;
+
             } else {
-                cout << "The character is dead!" << '\n';
+                cout << "The character is dead. (HP: " << HP << " )" << '\n';
                 cout << "Can't rescue Guinevere. Game end..." << '\n';
                 exit(0);
             }
+        } else if (rescue == 1 || eventCount == numberOfEvents){
+            display(HP, level, remedy, maidenkiss, phoenixdown, rescue);
+            cout << "Rescue successfully!" << '\n';
+            cout << "Game end..." << '\n';
+            exit(0);
         }
+        
         display(HP, level, remedy, maidenkiss, phoenixdown, rescue);
         int eventCode { eventOrder.at(eventCount) };
 
+        // run event
         switch(eventCode){
             case 0:
                 rescue = 1;
@@ -133,13 +207,25 @@ void adventureToKoopa(
             
             case 1 ... 5:
                 fightCreep(eventCode, HP, level, remedy, maidenkiss, phoenixdown, rescue);
-                if(HP <= 0){
-                    rescue = 0;
-                }
+
+                break;
+            
+            case 6:
+                fightShaman(HP, level, remedy, maidenkiss, phoenixdown, rescue);
+                cureTiny(isTiny, HP, remedy);
+
                 break;
         }
 
+        if(HP <= 0){
+            rescue = 0;
+        }
+
         eventCount++; // Move to next event
+
+        // Stats after match-up
+        // display(HP, level, remedy, maidenkiss, phoenixdown, rescue);
     } // while-loop end
 #endif
 }
+
