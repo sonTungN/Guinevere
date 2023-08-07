@@ -240,6 +240,33 @@ void pickUpMushMario(
     cout << "Picking up MushMario. HP increases to " << HP << '\n';
 }
 
+void pickUpMushFibo(
+        int& HP, 
+        int& level, 
+        int& remedy, 
+        int& maidenkiss, 
+        int& phoenixdown, 
+        int& rescue){
+    
+    int previousNum = 1;
+    int currentNum = 1;
+    int tmp;
+
+    if(HP > 1){
+        while(true){
+            tmp = previousNum;
+            previousNum = currentNum;
+            currentNum += tmp;
+            
+            if(HP < currentNum){
+                HP = previousNum;
+                break;
+            }
+        }
+    }
+    cout << "Picking up MushFibo. HP drops to " << HP << '\n';
+}
+
 void adventureToKoopa(
         std::string file_input, 
         int& HP, 
@@ -313,32 +340,39 @@ void adventureToKoopa(
         display(HP, level, remedy, maidenkiss, phoenixdown, rescue);
         int eventCode { eventOrder.at(eventCount) };
 
-        // run event
-        switch(eventCode){
-            case 0:
-                rescue = 1;
-                break;
-            
-            case 1 ... 5:
-                fightCreep(eventCode, HP, level, remedy, maidenkiss, phoenixdown, rescue);
+        std::string eventCodeString { std::to_string(eventCode) };
+        if(eventCodeString.substr(0, 2) == "13"){
+            // fightMushGhost(eventCodeString, HP, level, remedy, maidenkiss, phoenixdown, rescue);
 
-                break;
-            
-            case 6:
-                fightShaman(HP, level, remedy, maidenkiss, phoenixdown, rescue);
-                cureTiny(isTiny, HP, remedy);
+        } else {
+            // run event
+            switch(eventCode){
+                case 0:
+                    rescue = 1;
+                    break;
+                
+                case 1 ... 5:
+                    fightCreep(eventCode, HP, level, remedy, maidenkiss, phoenixdown, rescue);
+                    break;
+                
+                case 6:
+                    fightShaman(HP, level, remedy, maidenkiss, phoenixdown, rescue);
+                    cureTiny(isTiny, HP, remedy);
+                    break;
+                
+                case 7:
+                    fightSiren(HP, level, remedy, maidenkiss, phoenixdown, rescue);
+                    cureFrog(isFrog, level, maidenkiss);
+                    break;
 
-                break;
-            
-            case 7:
-                fightSiren(HP, level, remedy, maidenkiss, phoenixdown, rescue);
-                cureFrog(isFrog, level, maidenkiss);
+                case 11:
+                    pickUpMushMario(HP, level, remedy, maidenkiss, phoenixdown, rescue);
+                    break;
 
-                break;
-
-            case 11:
-                pickUpMushMario(HP, level, remedy, maidenkiss, phoenixdown, rescue);
-                break;
+                case 12:
+                    pickUpMushFibo(HP, level, remedy, maidenkiss, phoenixdown, rescue);
+                    break;
+            }
         }
 
         if(HP <= 0){
@@ -349,3 +383,43 @@ void adventureToKoopa(
     } // while-loop end
 #endif
 }
+
+// std::vector<std::string> readInputFile(std::string file_input){
+//     std::ifstream file;
+//     file.open(file_input);
+//     if(!file.is_open()){
+//         std::cerr << "Fail to get including file name!" << '\n';
+//     }
+//     std::string line;
+//     getline(file, line);
+//     getline(file, line);
+
+//     std::vector<std::string> inputFile;
+//     while(getline(file, line, ',')){
+//         inputFile.push_back(line);
+//     }
+// }
+
+// void fightMushGhost(
+//         std::string eventCodeString, 
+//         int& HP, 
+//         int& level, 
+//         int& remedy, 
+//         int& maidenkiss, 
+//         int& phoenixdown, 
+//         int& rescue){
+
+//     char ghostType {};
+//     for(int i = 2; i < eventCodeString.length(); i++){
+//         ghostType = eventCodeString[i];
+
+//         switch(ghostType){
+//             case '1':
+
+//         }
+//     }
+
+// }
+
+
+
